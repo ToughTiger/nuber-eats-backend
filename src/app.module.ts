@@ -1,12 +1,18 @@
-import { Module } from '@nestjs/common';
-import * as Joi from 'joi';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { CommonModule } from './common/common.module';
-import { User } from './users/entity/user.entity';
-import { TaskModule } from './task/task.module';
+import { JwtModule } from './jwt/jwt.module';
+import { JwtMiddlware } from './jwt/jwt.middleware';
+import { MailModule } from './mail/mail.module';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -21,17 +27,53 @@ import { TaskModule } from './task/task.module';
       password: '',
       database: 'nuber-eats',
       synchronize: true,
-      logging: true,
-      entities: [User],
+      // logging: true,
+      autoLoadEntities: true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] }),
     }),
     UsersModule,
-    CommonModule,
-    TaskModule,
+
+    JwtModule.forRoot({
+      privateKey: process.env.SECRET,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        secure: false,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      },
+      defaults: {
+        from: '"Advisotech RE Admin"<noreply@advisotechindia.com>',
+      },
+      template: {
+        dir: process.cwd() + '/templets/',
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
+
+    MailModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddlware).forRoutes({
+      path: '/graphql',
+      method: RequestMethod.ALL,
+    });
+  }
+}
