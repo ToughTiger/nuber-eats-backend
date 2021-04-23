@@ -9,7 +9,11 @@ import { Verification } from './entity/verification.entity';
 import { MailModule } from 'src/mail/mail.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Verification]), ConfigService, JwtModule, MailModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Verification]),
+    JwtModule,
+    MailModule,
+  ],
   providers: [UsersService, UsersResolver],
   exports: [UsersService],
 })

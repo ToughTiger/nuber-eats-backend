@@ -13,6 +13,7 @@ import { JwtMiddlware } from './jwt/jwt.middleware';
 import { MailModule } from './mail/mail.module';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
   imports: [
@@ -21,11 +22,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: 'root',
-      password: '',
-      database: 'nuber-eats',
+      host: "localhost",
+      port: 3306,
+      username: "root",
+      password: "",
+      database: "nuber_eats",
       synchronize: true,
       // logging: true,
       autoLoadEntities: true,
@@ -65,6 +66,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     }),
 
     MailModule,
+    RestaurantsModule,
   ],
   controllers: [],
   providers: [],

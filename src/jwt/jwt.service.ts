@@ -3,14 +3,11 @@ import { CONFIG_OPTIONS } from './jwt.constants';
 import { JwtModuleOptions } from './jwt.interfaces';
 import * as Jwt from 'jsonwebtoken';
 
-import { UsersService } from 'src/users/users.service';
-
 @Injectable()
 export class JwtService {
   constructor(
     @Inject(CONFIG_OPTIONS)
     private readonly options: JwtModuleOptions,
-   
   ) {}
 
   sign(payload: object): string {

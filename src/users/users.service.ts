@@ -10,7 +10,10 @@ import { User } from './entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInputDto } from './dtos/edit-profile.dto';
+import {
+  EditProfileInputDto,
+  EditProfileOutputDto,
+} from './dtos/edit-profile.dto';
 import { Verification } from './entity/verification.entity';
 import { VerifyEmailOutputDto } from './dtos/verify-email.dto';
 import { MailService } from 'src/mail/mail.service';
@@ -38,13 +41,13 @@ export class UsersService {
       const verification = await this.verifications.save(
         this.verifications.create({ user }),
       );
-      await this.mailService.sendMail(
+      const code = await this.mailService.sendMail(
         user.email,
         'New User Registration',
         verification.code,
         user.name,
       );
-
+      console.log(code);
       return {
         success: true,
       };
@@ -99,24 +102,38 @@ export class UsersService {
   async editProfile(
     userId: number,
     { email, password }: EditProfileInputDto,
-  ): Promise<User> {
-    const user = await this.userRepository.findOne(userId);
-    if (email) {
-      user.email = email;
-      user.isVerified = false;
-     const verification = await this.verifications.save(this.verifications.create(user));
-      await this.mailService.sendMail(
-        user.email,
-        'Account Update Verification',
-        verification.code,
-        user.name,
-      );
+  ): Promise<EditProfileOutputDto> {
+    try {
+      const user = await this.userRepository.findOne(userId);
+      if (email) {
+        user.email = email;
+        user.isVerified = false;
+        const verification = await this.verifications.save(
+          this.verifications.create(user),
+        );
+        await this.mailService.sendMail(
+          user.email,
+          'Account Update Verification',
+          verification.code,
+          user.name,
+        );
+      }
+      if (password) {
+        user.password = password;
+      }
+      await this.userRepository.save(user);
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: ' Profile Update Unsuccessful!',
+      };
     }
-    if (password) {
-      user.password = password;
-    }
-    return await this.userRepository.save(user);
   }
+
+  //  Verify User Email
 
   async verifyEmail(code: string): Promise<VerifyEmailOutputDto> {
     try {

@@ -4,7 +4,9 @@ import { CreateMailOutput } from './dto/create-mail.input';
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(private readonly mailerService: MailerService) {
+    console.log(mailerService);
+  }
 
   async sendMail(email, subject, code, username): Promise<CreateMailOutput> {
     try {
@@ -24,7 +26,6 @@ export class MailService {
         success: true,
       };
     } catch (error) {
-      console.log(error.message);
       return {
         success: false,
         error,
