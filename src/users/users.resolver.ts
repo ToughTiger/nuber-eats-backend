@@ -2,6 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Role } from 'src/auth/role.decorator';
 
 import {
   createAccountInput,
@@ -25,6 +26,7 @@ import { UsersService } from './users.service';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+ 
   @Mutation((returns) => LoginOutputDto)
   async createAccount(
     @Args('input') createAccountInput: createAccountInput,
@@ -42,6 +44,7 @@ export class UsersResolver {
     }
   }
 
+ 
   @Mutation(() => LoginOutputDto)
   async login(@Args('input') loginDto: LogininputDto): Promise<LoginOutputDto> {
     try {
@@ -59,15 +62,16 @@ export class UsersResolver {
   }
 
   @Query((returns) => User)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   me(@AuthUser() authUser: User) {
     return authUser;
   }
 
   // Editing User Profile
 
-  @UseGuards(AuthGuard)
+ 
   @Mutation((returns) => EditProfileOutputDto)
+  @Role(['Any'])
   async editUserProfile(
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInputDto,
@@ -86,8 +90,9 @@ export class UsersResolver {
   }
 
   // Finding User Profile
-  @UseGuards(AuthGuard)
+ 
   @Query((returns) => UserProfileOutputDto)
+  @Role(['Any'])
   async userProfile(
     @Args() userProfile: UserProfileDto,
   ): Promise<UserProfileOutputDto> {
@@ -109,6 +114,7 @@ export class UsersResolver {
     }
   }
 
+  
   @Mutation((returns) => VerifyEmailOutputDto)
   async verifyEmail(
     @Args('input') { code }: verifyEmailInputDto,

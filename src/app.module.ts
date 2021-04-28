@@ -14,6 +14,8 @@ import { MailModule } from './mail/mail.module';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { RestaurantsModule } from './restaurants/restaurants.module';
+import { AuthModule } from './auth/auth.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -22,12 +24,12 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: "localhost",
+      host: 'localhost',
       port: 3306,
-      username: "root",
-      password: "",
-      database: "nuber_eats",
-      synchronize: true,
+      username: 'root',
+      password: '',
+      database: 'nuber-eats',
+      // synchronize: true,
       // logging: true,
       autoLoadEntities: true,
     }),
@@ -67,6 +69,8 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 
     MailModule,
     RestaurantsModule,
+    AuthModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
