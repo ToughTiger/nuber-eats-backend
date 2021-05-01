@@ -4,12 +4,16 @@ import { Restaurant } from '../entities/restaurant.entity';
 
 @InputType()
 export class CreateRestaurantInput extends PickType(Restaurant, [
-    'name', "coverImg", "address"
+  'name',
+  'coverImg',
+  'address',
 ]) {
-    @Field(type=> String)
-    categoryName: string;
-  
+  @Field((type) => String)
+  categoryName: string;
 }
 
 @ObjectType()
-export class CreateRestaurantOutput extends CoreOutputDto{}
+export class CreateRestaurantOutput extends CoreOutputDto {
+  @Field((type) => [Restaurant], { nullable: true })
+  restaurant?: Restaurant[];
+}

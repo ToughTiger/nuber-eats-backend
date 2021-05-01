@@ -8,7 +8,6 @@ import {
 } from '@nestjs/graphql';
 import { IsEnum, IsNumber } from 'class-validator';
 import { CoreEntity } from 'src/common/entity/core.entity';
-import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entity/user.entity';
 import {
@@ -25,6 +24,7 @@ import { OrderItem } from './order-item.entity';
 export enum OrderStatus {
   Pending = 'Pending',
   Cooking = 'Cooking',
+  Cooked = "Cooked",
   PickedUp = 'PickedUp',
   Delivered = 'Delivered',
 }
@@ -56,7 +56,6 @@ export class Order extends CoreEntity {
   @JoinColumn()
   driver?: User;
   @RelationId((order: Order) => order.driver)
-  @IsNumber()
   driverId: number;
 
   @Field((type) => Restaurant, { nullable: true })
@@ -69,6 +68,7 @@ export class Order extends CoreEntity {
   restaurant?: Restaurant;
 
   @RelationId((order: Order) => order.restaurant)
+  
   @Field((type) => [OrderItem])
   @ManyToMany((type) => OrderItem)
   @JoinTable()
