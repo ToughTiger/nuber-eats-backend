@@ -130,21 +130,22 @@ export class OrdersService {
             owner: user,
           },
           relations: ['orders'],
+          
         });
-
         orders = restaurants.map((restaurant) => restaurant.orders).flat(1);
         if (status) {
           orders = orders.filter((order) => order.status === status);
         }
       }
+      console.log(orders)
       return {
         success: true,
         orders,
       };
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       return {
-        success: true,
+        success: false,
         error: 'Could not find orders.',
       };
     }

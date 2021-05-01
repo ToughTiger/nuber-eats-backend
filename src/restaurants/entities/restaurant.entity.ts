@@ -3,7 +3,14 @@ import { IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entity/core.entity';
 import { Order } from 'src/orders/entities/orders.entity';
 import { User } from 'src/users/entity/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  RelationId,
+} from 'typeorm';
 import { Category } from './category.entity';
 import { Dish } from './dish.entity';
 
@@ -45,17 +52,14 @@ export class Restaurant extends CoreEntity {
   @ManyToOne((type) => User, (user) => user.restaurants, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'ownerId' })
   owner: User;
 
+  @RelationId((restaurant: Restaurant) => restaurant.owner)
+  ownerId: number;
+
   @Field((type) => [Order])
-  @ManyToOne((type) => Order, (order) => order.restaurant, {
+  @OneToMany((type) => Order, (order) => order.restaurant, {
     onDelete: 'SET NULL',
   })
-  @JoinColumn()
   orders: Order[];
-
-  @Field((type) => Int)
-  @Column()
-  ownerId: number;
 }
